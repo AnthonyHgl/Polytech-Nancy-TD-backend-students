@@ -75,6 +75,17 @@ public class Application {
             }
             return;
         }
+        if ("DELETE".equals(method) && m.matches()){
+            int id = Integer.parseInt(m.group(1));
+            int task = dao.remove(id);
+
+            if (task == 1) {
+                sendResponse(exchange, 204, JsonUtils.serialize(task));
+            } else {
+                sendResponse(exchange, 404, null);
+            }
+            return;
+        }
 
         // Otherwise → 404
         sendResponse(exchange, 404, null);

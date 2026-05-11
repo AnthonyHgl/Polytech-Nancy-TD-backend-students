@@ -33,6 +33,16 @@ public class TaskDao {
     public Optional<Task> findById(int id) {
         return Optional.ofNullable(storage.get(id));
     }
-    public List<Task> findall(){return new ArrayList<>(storage.values());
+    public List<Task> findall(){return new ArrayList<>(storage.values());}
+
+    public int remove(int id) {
+        if (storage.containsKey(id)) {
+            storage.remove(id);
+            return 1;
+        }
+        else {
+            return 0;
+        }
     }
+
 }

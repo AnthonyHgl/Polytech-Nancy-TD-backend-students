@@ -1,8 +1,6 @@
 package com.example.todoapp;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Data Access Object for {@link Task} model.
@@ -34,5 +32,7 @@ public class TaskDao {
      */
     public Optional<Task> findById(int id) {
         return Optional.ofNullable(storage.get(id));
+    }
+    public List<Task> findall(){return new ArrayList<>(storage.values());
     }
 }

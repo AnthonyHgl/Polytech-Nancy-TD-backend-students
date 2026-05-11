@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -63,6 +64,17 @@ public class Application {
             return;
         }
         //endregion
+
+        if ("GET".equals(method) && "/tasks".equals(path)){
+            List<Task> task = dao.findall();
+
+            if (!task.isEmpty()) {
+                sendResponse(exchange, 200, JsonUtils.serialize(task));
+            } else {
+                sendResponse(exchange, 404, null);
+            }
+            return;
+        }
 
         // Otherwise → 404
         sendResponse(exchange, 404, null);

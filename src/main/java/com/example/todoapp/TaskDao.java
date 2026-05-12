@@ -58,8 +58,7 @@ public class TaskDao {
     }
 
     public int count(){
-        int c = storage.size();
-        return c;
+        return storage.size();
     }
 
 

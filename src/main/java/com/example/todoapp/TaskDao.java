@@ -57,5 +57,10 @@ public class TaskDao {
         return new ArrayList<>(storage.values()) ;
     }
 
+    public int count(){
+        int c = storage.size();
+        return c;
+    }
+
 
 }

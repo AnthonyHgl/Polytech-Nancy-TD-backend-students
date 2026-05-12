@@ -109,6 +109,16 @@ public class Application {
             }
             return;
         }
+        if ("GET".equals(method) && "/tasks/count".equals(path)) {
+            int task = dao.count();
+
+            if (task != 0 ) {
+                sendResponse(exchange, 200,JsonUtils.serialize(task) );
+            } else {
+                sendResponse(exchange, 404, null);
+            }
+            return;
+        }
 
 
 

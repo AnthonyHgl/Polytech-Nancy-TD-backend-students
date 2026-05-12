@@ -54,7 +54,6 @@ paths:
             tags: [ tasks ]
             summary: Supprime toutes les tâches
             description: Supprime tputes tâches
-
             responses:
                 '204':
                     description: Tâche supprimée avec succès
@@ -120,6 +119,10 @@ paths:
             reponses:
                 '200':
                     description: Nombre de tâche comptée avec succès
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Task'
 
                 '404':
                     description: Tâche non trouvée

@@ -44,5 +44,13 @@ public class TaskDao {
             return 0;
         }
     }
+    public Optional<Task> modif(int id, Task task) {
+        if (!storage.containsKey(id)) {
+            return Optional.empty();
+        }
+        storage.replace(id,storage.get(id),task);
+
+        return Optional.ofNullable(storage.get(id));
+    }
 
 }

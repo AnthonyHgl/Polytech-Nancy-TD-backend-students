@@ -52,6 +52,7 @@ public class Application {
 
         //region Manage GET /tasks/{id}
         Matcher m = ID_PATH.matcher(path);
+
         if ("GET".equals(method) && m.matches()) {
             int id = Integer.parseInt(m.group(1));
             Optional<Task> task = dao.findById(id);
@@ -65,7 +66,7 @@ public class Application {
         }
         //endregion
 
-        if ("GET".equals(method) && "/tasks".equals(path)){
+        if ("GET".equals(method) && "/tasks".equals(path)) {
             List<Task> task = dao.findall();
 
             if (!task.isEmpty()) {
@@ -75,17 +76,34 @@ public class Application {
             }
             return;
         }
-        if ("DELETE".equals(method) && m.matches()){
+        if ("DELETE".equals(method) && m.matches()) {
             int id = Integer.parseInt(m.group(1));
             int task = dao.remove(id);
 
             if (task == 1) {
-                sendResponse(exchange, 204, JsonUtils.serialize(task));
+                sendResponse(exchange, 204, null);
             } else {
                 sendResponse(exchange, 404, null);
             }
             return;
         }
+        if ("PUT".equals(method) && m.matches()) {
+            int id = Integer.parseInt(m.group(1));
+            String body = new String(exchange.getRequestBody().readAllBytes());
+            Task t = JsonUtils.deserialize(body, Task.class);
+            Optional<Task> task = dao.modif(id, t);
+            if (task.isPresent()) {
+                sendResponse(exchange, 204, null);
+            } else {
+                sendResponse(exchange, 404, null);
+            }
+            return;
+        }
+
+
+
+
+
 
         // Otherwise → 404
         sendResponse(exchange, 404, null);

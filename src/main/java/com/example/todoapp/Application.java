@@ -115,7 +115,7 @@ public class Application {
             if (task != 0 ) {
                 sendResponse(exchange, 200,JsonUtils.serialize(task) );
             } else {
-                sendResponse(exchange, 404, null);
+                sendResponse(exchange, 404, JsonUtils.serialize(0));
             }
             return;
         }

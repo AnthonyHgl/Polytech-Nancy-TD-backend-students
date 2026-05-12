@@ -37,6 +37,20 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Task'
+        get:
+            tags: [ tasks ]
+            summary: Récupérer toutes les tâches
+            description: Récupérer toutes les tâches
+            responses:
+                '200':
+                    description: Tâches trouvées avec succès
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Task'
+                '404':
+                    description: Tâche non trouvée
+
 
     /tasks/{id}:
         parameters:
@@ -61,6 +75,35 @@ paths:
                                 $ref: '#/components/schemas/Task'
                 '404':
                     description: Tâche non trouvée
+
+        delete:
+            tags: [ tasks ]
+            summary: Supprime une tâche
+            description: Supprime une tâche par son identifiant
+            operationId: getTaskById
+            responses:
+                '204':
+                    description: Tâche supprimée avec succès
+
+                '404':
+                    description: Tâche non trouvée
+
+
+        put:
+            tags: [ tasks ]
+            summary: modifie une tâche
+            description: modifie une tâche par son identifiant
+            operationId: getTaskById
+            responses:
+                '204':
+                    description: Tâche modifiée avec succès
+
+                '404':
+                    description: Tâche non trouvée
+
+
+
+
 components:
     schemas:
         Task:
@@ -85,3 +128,4 @@ components:
             required:
                 - id
                 - title
+

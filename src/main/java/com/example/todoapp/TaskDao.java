@@ -52,5 +52,10 @@ public class TaskDao {
 
         return Optional.ofNullable(storage.get(id));
     }
+    public List<Task> remove_all() {
+        storage.clear();
+        return new ArrayList<>(storage.values()) ;
+    }
+
 
 }

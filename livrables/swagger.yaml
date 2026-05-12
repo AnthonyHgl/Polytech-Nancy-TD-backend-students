@@ -50,6 +50,17 @@ paths:
                                 $ref: '#/components/schemas/Task'
                 '404':
                     description: Tâche non trouvée
+        delete:
+            tags: [ tasks ]
+            summary: Supprime toutes les tâches
+            description: Supprime tputes tâches
+
+            responses:
+                '204':
+                    description: Tâche supprimée avec succès
+
+                '404':
+                    description: Tâche non trouvée
 
 
     /tasks/{id}:
@@ -75,6 +86,7 @@ paths:
                                 $ref: '#/components/schemas/Task'
                 '404':
                     description: Tâche non trouvée
+
 
         delete:
             tags: [ tasks ]

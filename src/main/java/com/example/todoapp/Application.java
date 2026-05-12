@@ -99,6 +99,16 @@ public class Application {
             }
             return;
         }
+        if ("DELETE".equals(method) && "/tasks".equals(path)) {
+            List<Task> task = dao.remove_all();
+
+            if (task.isEmpty()) {
+                sendResponse(exchange, 204, null);
+            } else {
+                sendResponse(exchange, 404, null);
+            }
+            return;
+        }
 
 
 

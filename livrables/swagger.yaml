@@ -112,6 +112,17 @@ paths:
 
                 '404':
                     description: Tâche non trouvée
+    /tasks/count:
+        get:
+            tags: [ tasks ]
+            summary: Nombre de tâche
+            description: renvoie le nombre de tâches
+            reponses:
+                '200':
+                    description: Nombre de tâche comptée avec succès
+
+                '404':
+                    description: Tâche non trouvée
 
 
 

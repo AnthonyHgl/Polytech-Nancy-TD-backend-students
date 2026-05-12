@@ -80,7 +80,7 @@ paths:
             tags: [ tasks ]
             summary: Supprime une tâche
             description: Supprime une tâche par son identifiant
-            operationId: getTaskById
+            operationId: deleteTaskById
             responses:
                 '204':
                     description: Tâche supprimée avec succès
@@ -93,7 +93,7 @@ paths:
             tags: [ tasks ]
             summary: modifie une tâche
             description: modifie une tâche par son identifiant
-            operationId: getTaskById
+            operationId: putTaskById
             responses:
                 '204':
                     description: Tâche modifiée avec succès

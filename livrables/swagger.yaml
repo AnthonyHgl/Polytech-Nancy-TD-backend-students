@@ -47,9 +47,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Task'
+                $ref: '#/components/schemas/Tasks'
         '404':
           description: Tâche non trouvée
+
+
+
+
     delete:
       tags: [ tasks ]
       summary: Supprime toutes les tâches
@@ -155,4 +159,38 @@ components:
       required:
         - id
         - title
+        -
+
+    Task2:
+      type: object
+      description: Représentation d'une autre tâche
+      properties:
+        id:
+          type: integer
+          example: 2
+        title:
+          type: string
+          nullable: false
+          example: Acheter de céréales
+        description:
+          type: string
+          nullable: true
+          example: chocapic
+        done:
+          type: boolean
+          nullable: false
+          example: false
+      required:
+        - id
+        - title
+
+    Tasks:
+        type: array
+        items:
+          oneOf:
+            - $ref: "#/components/schemas/Task"
+            - $ref: "#/components/schemas/Task2"
+
+
+
 

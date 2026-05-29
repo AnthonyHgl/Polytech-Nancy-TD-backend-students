@@ -2,66 +2,160 @@ package dao;
 
 import com.example.todoapp.Task;
 
-import java.util.*;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
-/**
- * Data Access Object for {@link Task} model.
- */
 public class TaskDao {
 
-    private final Map<Integer, Task> storage = new HashMap<>();
+    // Le fichier SQLite sera créé dans le répertoire courant
+    private static final String DB_URL = "jdbc:sqlite:tasks.db";
 
-    {
-        save(new Task(1, "Réviser DS de maths", "Séries numériques et probabilités.", false));
-        save(new Task(2, "Valider mon PIVE", "PIVE Club Poker.", true));
-        save(new Task(3, "Choisir mon parcours de 4A", "SIR ou SIA ?", false));
+    public TaskDao() {
+        initTable();
+        seedIfEmpty();
+    }
+    private void initTable() {
+        String sql = """
+                CREATE TABLE IF NOT EXISTS tasks (
+                    id      INTEGER PRIMARY KEY,
+                    title   TEXT    NOT NULL,
+                    description TEXT,
+                    done    INTEGER NOT NULL DEFAULT 0
+                );
+                """;
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement()) {
+            stmt.execute(sql);
+        } catch (SQLException e) {
+            throw new RuntimeException("Erreur lors de l'initialisation de la table", e);
+        }
     }
 
-    /**
-     * Persist {@link Task} model.
-     * @param task task to save.
-     * @return task model.
-     */
+
+    private void seedIfEmpty() {
+        if (count() == 0) {
+            save(new Task(1, "Réviser DS de maths",  "Séries numériques et probabilités.", false));
+            save(new Task(2, "Valider mon PIVE",      "PIVE Club Poker.",                  true));
+            save(new Task(3, "Choisir mon parcours de 4A", "SIR ou SIA ?",                false));
+        }
+    }
+
+
+    private Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(DB_URL);
+    }
+
+    private Task mapRow(ResultSet rs) throws SQLException {
+        return new Task(
+                rs.getInt("id"),
+                rs.getString("title"),
+                rs.getString("description"),
+                rs.getInt("done") == 1
+        );
+    }
+
     public Task save(Task task) {
-        storage.put(task.id(), task);
-        return task;
+        String sql = "INSERT OR REPLACE INTO tasks (id, title, description, done) VALUES (?, ?, ?, ?)";
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt   (1, task.id());
+            ps.setString(2, task.title());
+            ps.setString(3, task.description());
+            ps.setInt   (4, task.done() ? 1 : 0);
+            ps.executeUpdate();
+            return task;
+        } catch (SQLException e) {
+            throw new RuntimeException("Erreur lors de la sauvegarde de la tâche", e);
+        }
     }
 
-    /**
-     * Retrieve {@link Task} model by id.
-     * @param id identifier of the {@link Task}.
-     * @return {@link Task} model wrapped by Optional.
-     */
+
     public Optional<Task> findById(int id) {
-        return Optional.ofNullable(storage.get(id));
+        String sql = "SELECT * FROM tasks WHERE id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return Optional.of(mapRow(rs));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erreur lors de la recherche par id", e);
+        }
+        return Optional.empty();
     }
-    public List<Task> findall(){return new ArrayList<>(storage.values());}
+
+    public List<Task> findall() {
+        String sql = "SELECT * FROM tasks";
+        List<Task> tasks = new ArrayList<>();
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                tasks.add(mapRow(rs));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erreur lors de la récupération de toutes les tâches", e);
+        }
+        return tasks;
+    }
 
     public int remove(int id) {
-        if (storage.containsKey(id)) {
-            storage.remove(id);
-            return 1;
-        }
-        else {
-            return 0;
+        String sql = "DELETE FROM tasks WHERE id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            return ps.executeUpdate(); // renvoie le nombre de lignes affectées
+        } catch (SQLException e) {
+            throw new RuntimeException("Erreur lors de la suppression de la tâche", e);
         }
     }
+
     public Optional<Task> modif(int id, Task task) {
-        if (!storage.containsKey(id)) {
+        // Vérifie d'abord que la tâche existe
+        if (findById(id).isEmpty()) {
             return Optional.empty();
         }
-        storage.replace(id,storage.get(id),task);
-
-        return Optional.ofNullable(storage.get(id));
+        String sql = "UPDATE tasks SET title = ?, description = ?, done = ? WHERE id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, task.title());
+            ps.setString(2, task.description());
+            ps.setInt   (3, task.done() ? 1 : 0);
+            ps.setInt   (4, id);
+            ps.executeUpdate();
+            return findById(id);
+        } catch (SQLException e) {
+            throw new RuntimeException("Erreur lors de la modification de la tâche", e);
+        }
     }
+
+
     public List<Task> remove_all() {
-        storage.clear();
-        return new ArrayList<>(storage.values()) ;
+        String sql = "DELETE FROM tasks";
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement()) {
+            stmt.executeUpdate(sql);
+        } catch (SQLException e) {
+            throw new RuntimeException("Erreur lors de la suppression de toutes les tâches", e);
+        }
+        return new ArrayList<>();
     }
 
-    public int count(){
-        return storage.size();
+    public int count() {
+        String sql = "SELECT COUNT(*) FROM tasks";
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erreur lors du comptage des tâches", e);
+        }
+        return 0;
     }
-
-
 }

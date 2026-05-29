@@ -10,38 +10,31 @@ public class TaskService {
     private static final TaskDao dao = new TaskDao();
 
     public  Task save(Task input){
-        Task createdTask = dao.save(input);
-        return createdTask;
+        return dao.save(input);
     }
 
     public  Optional<Task> findByID(int id){
-        Optional<Task> task = dao.findById(id);
-        return task;
+        return dao.findById(id);
     }
 
     public  List<Task> findAll(){
-        List<Task> task = dao.findall();
-        return task;
+        return dao.findall();
     }
 
     public  int remove(int id){
-        int task = dao.remove(id);
-        return task;
+        return dao.remove(id);
     }
 
     public  Optional<Task> modif(int id, Task t){
-        Optional<Task> task = dao.modif(id, t);
-        return task;
+        return dao.modif(id, t);
     }
 
     public  List<Task> remove_all(){
-        List<Task> task = dao.remove_all();
-        return task;
+        return dao.remove_all();
     }
 
     public  int count(){
-        int task = dao.count();
-        return task;
+        return dao.count();
     }
 
 }

@@ -7,11 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Data Access Object for {@link Task} model.
- * Backed by a SQLite database via JDBC.
- * L'id est autogénéré par SQLite (AUTOINCREMENT).
- */
 public class TaskDao {
 
     private static final String DB_URL = "jdbc:sqlite:tasks.db";
@@ -21,10 +16,8 @@ public class TaskDao {
         seedIfEmpty();
     }
 
-    // ─── Initialisation ───────────────────────────────────────────────────────
 
     private void initTable() {
-        // id en AUTOINCREMENT : SQLite génère l'id si on insère avec id=NULL
         String sql = """
                 CREATE TABLE IF NOT EXISTS tasks (
                     id          INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -49,8 +42,6 @@ public class TaskDao {
         }
     }
 
-    // ─── Helpers ──────────────────────────────────────────────────────────────
-
     private Connection getConnection() throws SQLException {
         return DriverManager.getConnection(DB_URL);
     }
@@ -64,12 +55,6 @@ public class TaskDao {
         );
     }
 
-    // ─── CRUD ─────────────────────────────────────────────────────────────────
-
-    /**
-     * Insère une tâche. Si task.id() == 0, SQLite génère l'id automatiquement.
-     * Retourne la tâche avec son id généré.
-     */
     public Task save(Task task) {
         String sql = "INSERT INTO tasks (title, description, done) VALUES (?, ?, ?)";
         try (Connection conn = getConnection();

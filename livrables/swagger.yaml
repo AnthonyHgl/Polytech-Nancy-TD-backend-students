@@ -23,7 +23,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Task'
+              $ref: '#/components/schemas/CreateTaskDTO'
       responses:
         '201':
           description: Tâche créée avec succès
@@ -36,35 +36,80 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Task'
+                $ref: '#/components/schemas/TaskResponseDTO'
+        '400':
+          description: Paramètre(s) invalide(s)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorDTO'
+        '500':
+          description: Erreur inattendue
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'
+
     get:
       tags: [ tasks ]
       summary: Récupérer toutes les tâches
-      description: Récupérer toutes les tâches
+      operationId: getAllTasks
       responses:
         '200':
           description: Tâches trouvées avec succès
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Tasks'
+                type: array
+                items:
+                  $ref: '#/components/schemas/TaskResponseDTO'
         '404':
-          description: Tâche non trouvée
-
-
-
+          description: Aucune tâche trouvée
+        '500':
+          description: Erreur inattendue
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'
 
     delete:
       tags: [ tasks ]
-      summary: Supprime toutes les tâches
-      description: Supprime tputes tâches
+      summary: Supprimer toutes les tâches
+      operationId: deleteAllTasks
       responses:
         '204':
-          description: Tâche supprimée avec succès
+          description: Toutes les tâches supprimées avec succès
+        '500':
+          description: Erreur inattendue
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'
 
+  /tasks/count:
+    get:
+      tags: [ tasks ]
+      summary: Nombre de tâches
+      operationId: countTasks
+      description: Retourne le nombre total de tâches
+      responses:
+        '200':
+          description: Nombre de tâches compté avec succès
+          content:
+            application/json:
+              schema:
+                type: integer
+                example: 3
         '404':
-          description: Tâche non trouvée
-
+          description: Aucune tâche trouvée
+        '500':
+          description: Erreur inattendue
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'
 
   /tasks/{id}:
     parameters:
@@ -75,10 +120,10 @@ paths:
         schema:
           type: integer
           minimum: 1
+
     get:
       tags: [ tasks ]
-      summary: Récupérer une tâche
-      description: Récupérer une tâche par son identifiant
+      summary: Récupérer une tâche par son identifiant
       operationId: getTaskById
       responses:
         '200':
@@ -86,67 +131,116 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Task'
+                $ref: '#/components/schemas/TaskResponseDTO'
         '404':
           description: Tâche non trouvée
-
+        '500':
+          description: Erreur inattendue
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'
 
     delete:
       tags: [ tasks ]
-      summary: Supprime une tâche
-      description: Supprime une tâche par son identifiant
+      summary: Supprimer une tâche par son identifiant
       operationId: deleteTaskById
       responses:
         '204':
           description: Tâche supprimée avec succès
-
         '404':
           description: Tâche non trouvée
-
-
-    put:
-      tags: [ tasks ]
-      summary: modifie une tâche
-      description: modifie une tâche par son identifiant
-      operationId: putTaskById
-      responses:
-        '204':
-          description: Tâche modifiée avec succès
-
-        '404':
-          description: Tâche non trouvée
-  /tasks/count:
-    get:
-      tags: [ tasks ]
-      summary: Nombre de tâche
-      description: renvoie le nombre de tâches
-      responses:
-        '200':
-          description: Nombre de tâche comptée avec succès
+        '500':
+          description: Erreur inattendue
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Task'
+                $ref: '#/components/schemas/ErrorDTO'
 
+    put:
+      tags: [ tasks ]
+      summary: Modifier une tâche par son identifiant
+      operationId: putTaskById
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTaskDTO'
+      responses:
+        '204':
+          description: Tâche modifiée avec succès
+        '400':
+          description: Paramètre(s) invalide(s)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorDTO'
         '404':
           description: Tâche non trouvée
-
-
-
-
+        '500':
+          description: Erreur inattendue
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'
 
 components:
   schemas:
-    Task:
+
+    # ── DTO d'entrée : création ───────────────────────────────────────────────
+    CreateTaskDTO:
       type: object
-      description: Représentation d'une tâche
+      description: Corps de la requête pour créer une tâche. L'id est autogénéré ; done est initialisé à false.
+      properties:
+        title:
+          type: string
+          maxLength: 50
+          nullable: false
+          example: Acheter du lait
+        description:
+          type: string
+          maxLength: 255
+          nullable: true
+          example: 2L demi-écrémé
+      required:
+        - title
+
+    # ── DTO d'entrée : modification ───────────────────────────────────────────
+    UpdateTaskDTO:
+      type: object
+      description: Corps de la requête pour modifier une tâche.
+      properties:
+        title:
+          type: string
+          maxLength: 50
+          nullable: false
+          example: Acheter du lait
+        description:
+          type: string
+          maxLength: 255
+          nullable: true
+          example: 2L demi-écrémé
+        done:
+          type: boolean
+          nullable: false
+          example: true
+      required:
+        - title
+        - done
+
+    # ── DTO de sortie ─────────────────────────────────────────────────────────
+    TaskResponseDTO:
+      type: object
+      description: Représentation d'une tâche retournée par l'API.
       properties:
         id:
           type: integer
           example: 1
         title:
           type: string
-          nullable: false
           example: Acheter du lait
         description:
           type: string
@@ -154,43 +248,25 @@ components:
           example: 2L demi-écrémé
         done:
           type: boolean
-          nullable: false
           example: false
       required:
         - id
         - title
-        -
+        - done
 
-    Task2:
+    # ── DTO d'erreur ──────────────────────────────────────────────────────────
+    ErrorDTO:
       type: object
-      description: Représentation d'une autre tâche
+      description: Représentation d'une erreur (validation ou serveur).
       properties:
-        id:
-          type: integer
-          example: 2
-        title:
+        field:
           type: string
-          nullable: false
-          example: Acheter de céréales
-        description:
+          description: Nom du champ en erreur (ou "server" pour une erreur inattendue)
+          example: title
+        message:
           type: string
-          nullable: true
-          example: chocapic
-        done:
-          type: boolean
-          nullable: false
-          example: false
+          description: Description de l'erreur
+          example: Le titre ne doit pas dépasser 50 caractères.
       required:
-        - id
-        - title
-
-    Tasks:
-        type: array
-        items:
-          oneOf:
-            - $ref: "#/components/schemas/Task"
-            - $ref: "#/components/schemas/Task2"
-
-
-
-
+        - field
+        - message

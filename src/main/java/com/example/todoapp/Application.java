@@ -127,7 +127,7 @@ public class Application {
 
         // Otherwise → 404
         sendResponse(exchange, 404, null);
-    }
+    }   
 
     private static void sendResponse(HttpExchange exchange, int status, String json) throws IOException {
         if(nonNull(json)) {

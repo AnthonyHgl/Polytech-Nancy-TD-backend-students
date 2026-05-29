@@ -46,7 +46,7 @@ public class TaskController {
             return;
         }
 
-        // GET /tasks/count  — doit être testé AVANT le pattern /{id}
+        // GET /tasks/count/{id}
         if ("GET".equals(method) && "/tasks/count".equals(path)) {
             handleCount(exchange);
             return;
@@ -86,8 +86,6 @@ public class TaskController {
 
         sendResponse(exchange, 404, null);
     }
-
-    // ─── Handlers ─────────────────────────────────────────────────────────────
 
     /** POST /tasks */
     private static void handleCreate(HttpExchange exchange) throws IOException {
@@ -163,8 +161,6 @@ public class TaskController {
             sendResponse(exchange, 404, JsonUtils.serialize(0));
         }
     }
-
-    // ─── Helper ───────────────────────────────────────────────────────────────
 
     private static void sendResponse(HttpExchange exchange, int status, String json) throws IOException {
         if (nonNull(json)) {

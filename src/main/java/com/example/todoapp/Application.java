@@ -18,7 +18,7 @@ public class Application {
         log.info("In-memory repository initialised");
 
         HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
-        server.createContext("/tasks",new TaskController(),Application::handleTasks);
+        server.createContext("/tasks",TaskController::handleTasks);
         server.setExecutor(null);
         server.start();
         log.info("HTTP server started on http://localhost:8080");

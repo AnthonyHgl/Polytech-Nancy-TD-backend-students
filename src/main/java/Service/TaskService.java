@@ -9,19 +9,39 @@ import java.util.Optional;
 public class TaskService {
     private static final TaskDao dao = new TaskDao();
 
-    public  Optional<Task> Taskconsult(id){
-        Optional<Task> task = dao.findById(id);
+    public  Task save(Task input){
+        Task createdTask = dao.save(input);
+        return createdTask;
     }
 
-    Task createdTask = dao.save(input);
+    public  Optional<Task> findByID(int id){
+        Optional<Task> task = dao.findById(id);
+        return task;
+    }
 
-    List<Task> task = dao.findall();
-    int task = dao.remove(id);
-    Optional<Task> task = dao.modif(id, t);
-    List<Task> task = dao.remove_all();
-    int task = dao.count();
+    public  List<Task> findAll(){
+        List<Task> task = dao.findall();
+        return task;
+    }
 
+    public  int remove(int id){
+        int task = dao.remove(id);
+        return task;
+    }
 
+    public  Optional<Task> modif(int id, Task t){
+        Optional<Task> task = dao.modif(id, t);
+        return task;
+    }
 
+    public  List<Task> remove_all(){
+        List<Task> task = dao.remove_all();
+        return task;
+    }
+
+    public  int count(){
+        int task = dao.count();
+        return task;
+    }
 
 }

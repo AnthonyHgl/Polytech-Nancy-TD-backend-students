@@ -29,7 +29,7 @@ public class    TaskController {
         //region Manage POST /tasks
         if ("POST".equals(method) && "/tasks".equals(path)) {
             Task input = JsonUtils.deserialize(new String(exchange.getRequestBody().readAllBytes(), UTF_8), Task.class);
-            Task createdTask = dao.save(input);
+            Task createdTask = service.save(input);
 
             exchange.getResponseHeaders().add("Location", "/tasks/" + createdTask.id());
             sendResponse(exchange, 201, JsonUtils.serialize(createdTask));
@@ -42,7 +42,7 @@ public class    TaskController {
 
         if ("GET".equals(method) && m.matches()) {
             int id = Integer.parseInt(m.group(1));
-            Optional<Task> task = dao.findById(id);
+            Optional<Task> task = service.findByID(id);
 
             if (task.isPresent()) {
                 sendResponse(exchange, 200, JsonUtils.serialize(task.get()));
@@ -54,7 +54,7 @@ public class    TaskController {
         //endregion
 
         if ("GET".equals(method) && "/tasks".equals(path)) {
-            List<Task> task = dao.findall();
+            List<Task> task = service.findAll();
 
             if (!task.isEmpty()) {
                 sendResponse(exchange, 200, JsonUtils.serialize(task));
@@ -65,7 +65,7 @@ public class    TaskController {
         }
         if ("DELETE".equals(method) && m.matches()) {
             int id = Integer.parseInt(m.group(1));
-            int task = dao.remove(id);
+            int task = service.remove(id);
 
             if (task == 1) {
                 sendResponse(exchange, 204, null);
@@ -78,7 +78,7 @@ public class    TaskController {
             int id = Integer.parseInt(m.group(1));
             String body = new String(exchange.getRequestBody().readAllBytes());
             Task t = JsonUtils.deserialize(body, Task.class);
-            Optional<Task> task = dao.modif(id, t);
+            Optional<Task> task = service.modif(id, t);
             if (task.isPresent()) {
                 sendResponse(exchange, 204, null);
             } else {
@@ -87,7 +87,7 @@ public class    TaskController {
             return;
         }
         if ("DELETE".equals(method) && "/tasks".equals(path)) {
-            List<Task> task = dao.remove_all();
+            List<Task> task = service.remove_all();
 
             if (task.isEmpty()) {
                 sendResponse(exchange, 204, null);
@@ -97,7 +97,7 @@ public class    TaskController {
             return;
         }
         if ("GET".equals(method) && "/tasks/count".equals(path)) {
-            int task = dao.count();
+            int task = service.count();
 
             if (task != 0 ) {
                 sendResponse(exchange, 200,JsonUtils.serialize(task) );
